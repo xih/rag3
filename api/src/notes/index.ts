@@ -41,7 +41,7 @@ const savePaperFromUrl = async (url: string) => {
   return filePath; // return the filePath that it was saved
 };
 
-const takeNotes = async (pdfUrl: string, name: string) => {
+const takeNotes = async (pdfUrl: string) => {
   if (!pdfUrl.endsWith("pdf")) {
     throw new Error("not a pdf");
   }
@@ -53,4 +53,4 @@ const takeNotes = async (pdfUrl: string, name: string) => {
   console.log(data, "data");
 };
 
-takeNotes("https://arxiv.org/pdf/2305.15334.pdf", "hello");
+takeNotes("https://arxiv.org/pdf/2305.15334.pdf");
