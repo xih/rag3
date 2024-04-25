@@ -18,6 +18,16 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { ChevronsUpDown, Plus, X } from "lucide-react";
+import {
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -119,6 +129,30 @@ export default function Home() {
             <Button type="submit">Submit</Button>
           </form>
         </Form>
+
+        <Drawer>
+          <DrawerTrigger className="mt-8 flex flex-row justify-start">
+            Open
+          </DrawerTrigger>
+          <DrawerContent>
+            <div className="mx-auto w-full max-w-sm">
+              <DrawerHeader>
+                <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                <DrawerDescription>
+                  This action cannot be undone.
+                </DrawerDescription>
+              </DrawerHeader>
+              <DrawerFooter>
+                <Button>Submit</Button>
+                <DrawerClose>
+                  <Button variant="outline" className="w-full max-w-sm">
+                    Cancel
+                  </Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );
