@@ -1,6 +1,7 @@
 // 4-25-2024
 // 1. make another form field that contains the question to ask the agent
 // 2. make anoteher api route /qa that returns the answer to the question and follow up questions
+// 3. use react-hook-from setValue (https://react-hook-form.com/docs/useform/setvalue) to replace the input state
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/drawer";
 import { useState } from "react";
 import { ArxivPaperNote } from "./api/take_notes";
+import { QaResponse } from "./api/qa";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -63,6 +65,8 @@ type Notes = {
 export default function Home() {
   const [submittedFormData, setSubmittedFormData] = useState<SubmitFormData>();
   const [notes, setNotes] = useState<Array<ArxivPaperNote>>();
+  const [questionAnswers, setQuestionAnswers] = useState<Array<QaResponse>>();
+  // const [question, setQuestion] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -85,6 +89,12 @@ export default function Home() {
     },
   });
 
+  const {
+    setValue: setQuestion,
+    getFieldState,
+    formState,
+  } = submitQuestionForm;
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
@@ -96,7 +106,27 @@ export default function Home() {
   async function onQuestionSubmitForm(
     values: z.infer<typeof submitQuestionFormSchema>
   ) {
-    console.log(values);
+    // 1. save the question to state?
+    // 2. fetch from the api
+
+    const response = await fetch("/api/qa", {
+      method: "post",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(values),
+    }).then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+    });
+
+    if (response) {
+      setQuestionAnswers(response);
+      return;
+    } else {
+      throw new Error("something went wrong getting answers");
+    }
   }
 
   async function onPaperSubmitForm(
@@ -234,24 +264,56 @@ export default function Home() {
           </Form>
         </div>
       </div>
-      {notes && notes.length > 0 && (
-        <div className="flex flex-col mx-auto">
-          <h2 className="">Notes</h2>
-          <div className="flex flex-col gap-2">
-            {notes.map((note, index) => {
-              return (
-                <div
-                  key={index}
-                  className="flex flex-col justify-start max-w-sm"
-                >
-                  <p>{note.note}</p>
-                  <p>[{note.pageNumbers}]</p>
-                </div>
-              );
-            })}
+      <div className="flex flex-row gap-10 justify-start">
+        {notes && notes.length > 0 && (
+          <div className="flex flex-col mx-auto">
+            <h2 className="">Notes</h2>
+            <div className="flex flex-col gap-2">
+              {notes.map((note, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="flex flex-col justify-start max-w-sm"
+                  >
+                    <p>{note.note}</p>
+                    <p>[{note.pageNumbers}]</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+        {questionAnswers && questionAnswers.length > 0 && (
+          <div>
+            <h2>Answers</h2>
+            <div>
+              {questionAnswers.map((qa, index) => {
+                return (
+                  <div key={index}>
+                    {qa.answer}
+                    {qa.followupQuestions.map(
+                      (followupQuestion, questionIndex) => {
+                        return (
+                          <div
+                            key={questionIndex}
+                            onClick={() => {
+                              setQuestion("question", followupQuestion);
+                              // https://react-hook-form.com/docs/useform/setvalue
+                              console.log(followupQuestion);
+                            }}
+                          >
+                            {questionIndex + 1}. {followupQuestion}
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       <Drawer>
         <DrawerTrigger className="mt-8 flex flex-row justify-start">
