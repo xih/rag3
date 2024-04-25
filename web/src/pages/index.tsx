@@ -23,6 +23,12 @@ const formSchema = z.object({
   username: z.string().min(2).max(50),
 });
 
+const submitPaperFormSchema = z.object({
+  paperUrl: z.string(),
+  name: z.string(),
+  pagesToDelete: z.string().optional(),
+});
+
 export default function Home() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -31,7 +37,18 @@ export default function Home() {
     },
   });
 
+  const submitPaperFrom = useForm<z.infer<typeof submitPaperFormSchema>>({
+    resolver: zodResolver(submitPaperFormSchema),
+    defaultValues: {
+      paperUrl: "https://www.arxiv.com",
+    },
+  });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+  }
+
+  function onPaperSubmitForm(values: z.infer<typeof submitPaperFormSchema>) {
     console.log(values);
   }
 
@@ -39,60 +56,59 @@ export default function Home() {
     <div className="flex flex-col gap-5">
       {/* two divs one for paper Url Submission, another for question and answer */}
       <div className="flex flex-col gap-2 border-b-02  mx-auto mt-8">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...submitPaperFrom}>
+          <form
+            onSubmit={submitPaperFrom.handleSubmit(onPaperSubmitForm)}
+            className="space-y-8"
+          >
             <FormField
-              control={form.control}
-              name="username"
+              control={submitPaperFrom.control}
+              name="paperUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Paper Url</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input placeholder="fasdfas" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
+                  <FormDescription>Input a paper Url</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
-              control={form.control}
-              name="username"
+              control={submitPaperFrom.control}
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
-                  <FormDescription>
-                    This is your public display name.
-                  </FormDescription>
+                  <FormDescription>Input the name of the paper</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <Collapsible>
-              <CollapsibleTrigger>
-                <Button variant="ghost" size="sm" className="p-1">
-                  <p>Delete any pages</p>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <p className="font-normal"> Delete pages?</p>
                   <ChevronsUpDown className="h-4 w-4" />
                   <span className="sr-only">Toggle</span>
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <FormField
-                  control={form.control}
-                  name="username"
+                  control={submitPaperFrom.control}
+                  name="pagesToDelete"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Pages to Delete</FormLabel>
                       <FormControl>
-                        <Input placeholder="shadcn" {...field} />
+                        <Input placeholder="10, 11, 12" {...field} />
                       </FormControl>
                       <FormDescription>
-                        This is your public display name.
+                        Delete pages from the pdf
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
