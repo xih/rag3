@@ -2,6 +2,11 @@ import { OpenAIClient } from "@langchain/openai";
 import { ChatPromptTemplate } from "langchain/prompts";
 import { BaseMessageChunk } from "langchain/schema";
 
+export type ArxivNote = {
+  note: string;
+  pageNumber: Array<number>;
+};
+
 export const NOTES_TOOL_SCHEMA: OpenAIClient.ChatCompletionTool = {
   type: "function",
   function: {

@@ -14,6 +14,7 @@ import { Document } from "langchain/document";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { NOTES_TOOL_SCHEMA, NOTE_PROMPT, noteOutputParser } from "./prompts.js";
 import { formatDocumentsAsString } from "langchain/util/document";
+import { SupabaseDatabase } from "database.js";
 
 const loadPaperFromUrl = async (url: string) => {
   const response = await axios.get(url, {
@@ -74,9 +75,18 @@ const generateNotes = async (documents: Document[]) => {
   return response;
 };
 
-const takeNotes = async (pdfUrl: string) => {
+const takeNotes = async (pdfUrl: string, name: string) => {
   if (!pdfUrl.endsWith("pdf")) {
     throw new Error("not a pdf");
+  }
+
+  const database = await SupabaseDatabase.fromExistingIndex();
+  // check that the PDFURL exists already
+  const paper = await database.getPaper(pdfUrl);
+
+  if (paper) {
+    console.log(paper.notes);
+    return paper.notes;
   }
 
   // 1. get the pdf from axios
@@ -101,10 +111,26 @@ const takeNotes = async (pdfUrl: string) => {
   // 4. call generateNotes
 
   const notes = await generateNotes(newDocs);
-  // 5. store the notes in supbase
-  // 6. return ntoes
+  // 5. store the notes in supabase
 
-  console.log(notes, "notes");
+  // const database = await SupabaseDatabase.fromDocuments(newDocs);
+
+  // database.vectorStore.similaritySearch()
+
+  // add paper to the dtabase
+  // and addDocuments to the vector store
+  // 6. return ntoes
+  Promise.all([
+    await database.addPaper({
+      name,
+      paperUrl: pdfUrl,
+      notes,
+      paper: formatDocumentsAsString(newDocs),
+    }),
+    database.vectorStore.addDocuments(newDocs),
+  ]);
+
+  return notes;
 };
 
-takeNotes("https://arxiv.org/pdf/2404.15949.pdf");
+// takeNotes("https://arxiv.org/pdf/2404.15949.pdf", "test");
