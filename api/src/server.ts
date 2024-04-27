@@ -1,5 +1,6 @@
 import express from "express";
 import { takeNotes } from "notes/index.js";
+import { qaOutput } from "qa/index.js";
 
 const main = () => {
   const app = express();
@@ -19,6 +20,14 @@ const main = () => {
     const notes = await takeNotes(paperUrl, name);
 
     res.status(200).send(notes);
+    return;
+  });
+
+  app.post("/qa", async (req, res) => {
+    const { question, paperUrl } = req.body;
+
+    const response = await qaOutput(question, paperUrl);
+    res.status(200).send(response);
     return;
   });
 
