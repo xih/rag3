@@ -75,7 +75,7 @@ const generateNotes = async (documents: Document[]) => {
   return response;
 };
 
-const takeNotes = async (pdfUrl: string, name: string) => {
+export const takeNotes = async (pdfUrl: string, name: string) => {
   if (!pdfUrl.endsWith("pdf")) {
     throw new Error("not a pdf");
   }

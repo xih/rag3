@@ -19,6 +19,10 @@
       "dependsOn": ["^start"],
       "inputs": ["**/src/**"]
     },
+    "start2": {
+      "dependsOn": ["^start2"],
+      "inputs": ["**/src/**"]
+    },
     "dev": {
       "dependsOn": ["^dev"],
       "inputs": ["**/src/**"]

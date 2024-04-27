@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "start:api": "yarn turbo run start --filter=api",
+    "start:api2": "yarn turbo run start2 --filter=api",
     "start:web": "yarn turbo run start --filter=web",
     "build": "yarn turbo run build",
     "lint": "yarn turbo run lint",
