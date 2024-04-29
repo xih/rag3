@@ -10,7 +10,7 @@
   "scripts": {
     "build": "yarn gen:supabase:types && tsc --declaration --outDir dist/",
     "start": "tsx --experimental-wasm-modules -r dotenv/config src/server.ts dotenv_config_path=.env.development.local",
-    "start2": "yarn build && node -r dotenv/config dist/server.js",
+    "start2": "node dist/server.js",
     "start3": "yarn build && node -r dotenv/config dist/server.js",
     "start:dist": "yarn build && node -r dotenv/config dist/server.js",
     "lint": "eslint src",
