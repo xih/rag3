@@ -9,6 +9,7 @@ import {
 import { SupabaseDatabase } from "database.js";
 import { ArxivNote } from "notes/prompts.js";
 import { Document } from "langchain/document";
+import { formatDocumentsAsString } from "langchain/util/document";
 
 const qaModel = async (
   documents: Array<Document>,
@@ -47,8 +48,6 @@ export const qaOutput = async (question: string, paperUrl: string) => {
     url: paperUrl,
   });
 
-  console.log(documents, "what are documents here");
-
   const notes = await database.getPaper(paperUrl);
 
   const answerAndFollowUp = await qaModel(
@@ -58,6 +57,18 @@ export const qaOutput = async (question: string, paperUrl: string) => {
   );
 
   // before returning, we want to save the answeres to the database so we can cache for next time
+  // 1. save the qa and followupQuestion to the database
+
+  await Promise.all(
+    answerAndFollowUp.map(async (qa) => {
+      await database.saveQa(
+        question,
+        qa.answer,
+        qa.followupQuestions,
+        formatDocumentsAsString(documents)
+      );
+    })
+  );
 
   return answerAndFollowUp;
 };

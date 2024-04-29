@@ -82,6 +82,32 @@ export class SupabaseDatabase {
     return data[0];
   }
 
+  async saveQa(
+    question: string,
+    answer: string,
+    followupQuestions: string[],
+    context: string
+  ) {
+    const { error } = await this.client.from(ARXIV_QUESTION_ANSWERING).insert({
+      answer,
+      context,
+      followup_questions: followupQuestions,
+      question,
+    });
+
+    if (error) {
+      return null;
+    }
+    return;
+
+    // answer: string | null
+    // context: string | null
+    // created_at: string | null
+    // followup_questions: string[] | null
+    // id: string
+    // question: string | null
+  }
+
   async addPaper({
     name,
     paperUrl,

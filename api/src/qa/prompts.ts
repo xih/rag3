@@ -47,7 +47,12 @@ export const QA_PROMPT = ChatPromptTemplate.fromMessages([
   ["human", "Question: {question}"],
 ]);
 
-export const qaOutputParser = (message: BaseMessageChunk) => {
+export const qaOutputParser = (
+  message: BaseMessageChunk
+): Array<{
+  answer: string;
+  followupQuestions: string[];
+}> => {
   const toolCalls = message.additional_kwargs.tool_calls;
 
   if (!toolCalls) {

@@ -1,6 +1,6 @@
 import express from "express";
-import { takeNotes } from "notes/index.js";
-import { qaOutput } from "qa/index.js";
+import { takeNotes } from "./notes/index.js";
+import { qaOutput } from "./qa/index.js";
 
 const main = () => {
   const app = express();
